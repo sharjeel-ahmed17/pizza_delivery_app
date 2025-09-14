@@ -32,3 +32,21 @@ nodemailer
 
 # workd flow 
 register , login , logout , sendotp , verify otp , reset password  , google auth 
+
+
+# how to get .env secret 
+for frontend
+process.env.SECRET_KEY
+for backend
+import.meta.env.VITE_FIREBASE_API_KEY
+
+# website use for backend project
+firebase account
+gmail account (for app password)
+mongo db campus account
+cloudanary account
+razorpay (for payment)
+shippoo (for shipment)
+
+#useful website 
+jwt.io
