@@ -46,6 +46,11 @@ cd client
 npm start
 ```
 
+### API Testing
+
+You can easily test the API endpoints using Postman.  
+**Import the provided Postman collection** (`pizza_delivery_app.postman_collection.json`) to get started quickly.
+
 ## Folder Structure
 
 ```
