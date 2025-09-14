@@ -1,0 +1,34 @@
+# software 
+node js
+vs code 
+postman
+mongodb campass
+
+
+# tech
+mern stack
+
+#forntend packages : 
+@tailwindcss/vite
+axios
+firebase
+razorpay
+react
+react-dom
+react-icons
+react-router-dom
+tailwindcss
+
+#backend packages : 
+bcryptjs
+cookie-parser
+cors
+dotenv
+express
+jsonwebtoken
+mongoose
+multer
+nodemailer
+
+# workd flow 
+register , login , logout , sendotp , verify otp , reset password  , google auth 
