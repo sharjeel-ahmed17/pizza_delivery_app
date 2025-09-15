@@ -147,7 +147,7 @@ const ForgotPassword = () => {
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
-            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
+            {err && <p className="text-red-500 text-sm mt-2 text-center">{err}</p>}
           </form>
         )}
 
@@ -174,7 +174,7 @@ const ForgotPassword = () => {
             >
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
-            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
+            {err && <p className="text-red-500 text-sm mt-2 text-center">{err}</p>}
               
             
           </form>
@@ -231,7 +231,7 @@ const ForgotPassword = () => {
             >
               {loading ? "Resetting..." : "Reset Password"}
               
-            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
+            {err && <p className="text-red-500 text-sm mt-2 text-center">{err}</p>}
             </button>
           </form>
         )}
