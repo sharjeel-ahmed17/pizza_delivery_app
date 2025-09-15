@@ -16,7 +16,9 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function() {
+    return !this.googleId; // Only required if not a Google account
+  }
     },
     mobile: {
       type: String,
@@ -38,7 +40,13 @@ const userSchema = new mongoose.Schema(
     isOtpExpired : {
       type : Date,
       // default : false
-    }
+    },
+    provider: {
+  type: String,
+  enum: ["local", "google"],
+  default: "local"
+}
+
 
   },
   {

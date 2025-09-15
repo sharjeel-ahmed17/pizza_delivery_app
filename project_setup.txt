@@ -1,3 +1,6 @@
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+
 # software 
 node js
 vs code 

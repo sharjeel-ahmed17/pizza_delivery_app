@@ -17,6 +17,9 @@ const Signup = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState("");
+
 
   const handleChange = (e) => {
     setFormData({
@@ -55,25 +58,26 @@ const Signup = () => {
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleSignup = async (e) => {
+    e.preventDefault();
   try {
-    console.log("Google Signup clicked");
+    if (!formData.mobile){
+      return alert("Please enter mobile number")
+    }
     const provider = new GoogleAuthProvider();
 
     const result = await signInWithPopup(auth, provider); // ✅ await here
     const user = result.user;
 
-    console.log("Google user:", user);
+    // console.log("Google user:", user.displayName, user.email );
 
-    // If you need to send this user to your backend:
-    // const token = await user.getIdToken(); // Firebase ID token
-    // const response = await axios.post(
-    //   `${serverUrl}/api/auth/google`,
-    //   { token }, // your backend should verify this token with Firebase Admin SDK
-    //   { withCredentials: true }
-    // );
-
-    // console.log("Backend response:", response.data);
+    const {data} = await axios.post(`${serverUrl}/api/auth/google-auth` , {
+      fullname: user.displayName,
+      email: user.email,
+      role: formData.role,
+      mobile: formData.mobile,
+    } , {withCredentials : true}) 
+    console.log("Server response:", data);
   } catch (error) {
     console.error("Google signup error:", error.message);
   }

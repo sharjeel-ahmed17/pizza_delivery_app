@@ -173,3 +173,39 @@ return sendResponse(res , 200 , false , {message : "password reset successfully"
 
   
 }
+
+// ================= RESET_PASSWORD =================
+
+export const googleAuth = async (req , res)=>{
+  try {
+    const dummyPassword = await bcrypt.hash(Math.random().toString(36).slice(-8), 10);
+    const {fullname , email , role , mobile} = req.body;
+    let user = await User.findOne({email})
+    if (!user){
+      user = await User.create({
+        fullname,
+        email,
+        mobile,
+        role,
+        password: dummyPassword, // placeholder
+      })
+    }
+ const token = await getToken(user._id);
+
+    res.cookie("token", token, {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    return sendResponse(res, 201, false, { message: "User created successfully", user });
+
+
+  } catch (error) {
+    console.error(error);
+return sendResponse(res , 500 , true , { message: error.message }, null);
+
+    
+  }
+}
