@@ -6,6 +6,7 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import {ClipLoader} from "react-spinners"
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const Signup = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
 
 
   const handleChange = (e) => {
@@ -34,6 +35,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       console.log("Form submitted:", formData);
 
@@ -43,7 +45,7 @@ const Signup = () => {
         { withCredentials: true }
       );
 
-      console.log("Server response:", result.data);
+      // console.log("Server response:", result.data);
 
       // Reset form after success
       setFormData({
@@ -53,16 +55,28 @@ const Signup = () => {
         mobile: "",
         role: "user",
       });
+      setErr("")
+      setLoading(false)
     } catch (error) {
-      console.error("Error loading:", error.response?.data || error.message);
+     const backend = error.response?.data;
+
+    if (backend?.errors) {
+      // show backend validation error
+      setErr(backend.errors.message || backend.errors.general);
+    } else {
+      // fallback
+      setErr(error.message);
+    }
+  setLoading(false);
     }
   };
 
   const handleGoogleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true)
   try {
     if (!formData.mobile){
-      return alert("Please enter mobile number")
+      return setErr("Please enter mobile number")
     }
     const provider = new GoogleAuthProvider();
 
@@ -77,9 +91,14 @@ const Signup = () => {
       role: formData.role,
       mobile: formData.mobile,
     } , {withCredentials : true}) 
-    console.log("Server response:", data);
+    // console.log("Server response:", data);
+    setErr("")
+    setLoading(false)
   } catch (error) {
-    console.error("Google signup error:", error.message);
+    console.log(error);
+    
+    setErr("Error loading:", error.response?.data?.message);
+    setLoading(false)
   }
 };
 
@@ -170,6 +189,7 @@ const Signup = () => {
                 <button
                   type="button"
                   key={role}
+                  
                   onClick={() => handleRoleChange(role)}
                   className={`px-4 py-2 rounded-lg border border-gray-300 transition ${
                     formData.role === role
@@ -189,10 +209,18 @@ const Signup = () => {
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition"
+            disabled={loading}
           >
-            <FiUserPlus size={18} />
+            {
+loading ? <ClipLoader color="white" size={20} /> : <>
+<FiUserPlus size={18} />
             Sign Up
+</>
+            }
+            
           </button>
+           {err && <p className="text-red-500 text-sm mt-2 text-center">*{err}</p>}
+          
         </form>
 
         {/* Divider */}
