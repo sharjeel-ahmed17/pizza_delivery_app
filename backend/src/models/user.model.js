@@ -17,8 +17,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: function() {
-    return !this.googleId; // Only required if not a Google account
-  }
+    return !this.googleId;   }
     },
     mobile: {
       type: String,
@@ -27,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "owner", "deliveryBoy"], // restricts values
+      enum: ["user", "owner", "deliveryBoy"], 
       default: "user",
     },
     resetOtp : {
@@ -39,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     isOtpExpired : {
       type : Date,
-      // default : false
+      default : false
     },
     provider: {
   type: String,
@@ -50,7 +49,7 @@ const userSchema = new mongoose.Schema(
 
   },
   {
-    timestamps: true, // adds createdAt & updatedAt automatically
+    timestamps: true, 
   }
 );
 
