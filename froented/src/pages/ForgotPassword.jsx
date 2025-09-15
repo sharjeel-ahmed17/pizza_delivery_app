@@ -11,11 +11,15 @@ const ForgotPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPasswords, setShowPasswords] = useState(false);
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   // Step 1 → Send OTP
   const handleSendOtp = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
@@ -23,8 +27,20 @@ const ForgotPassword = () => {
         { withCredentials: true }
       );
       console.log("OTP Response:", result.data);
+      setErr("")
+      setLoading(false)
       setStep(2);
     } catch (error) {
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false)
       console.error(error);
       alert("Failed to send OTP");
     }
@@ -33,6 +49,7 @@ const ForgotPassword = () => {
   // Step 2 → Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
@@ -40,8 +57,20 @@ const ForgotPassword = () => {
         { withCredentials: true }
       );
       console.log("Verify OTP Response:", result.data);
+      setErr("")
+      setLoading(false)
       setStep(3);
     } catch (error) {
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false)
       console.error(error);
       alert("Invalid or expired OTP");
     }
@@ -50,6 +79,7 @@ const ForgotPassword = () => {
   // Step 3 → Reset Password
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    setLoading(true)
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -62,8 +92,20 @@ const ForgotPassword = () => {
       );
       console.log("Reset Response:", result.data);
       alert("Password reset successfully!");
+      setErr("")
+      setLoading(false)
       navigate("/login");
     } catch (error) {
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false)
       console.error(error);
       alert("Failed to reset password");
     }
@@ -101,9 +143,11 @@ const ForgotPassword = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition"
+              disabled={loading}
             >
-              Send OTP
+              {loading ? "Sending..." : "Send OTP"}
             </button>
+            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
           </form>
         )}
 
@@ -126,9 +170,13 @@ const ForgotPassword = () => {
             <button
               type="submit"
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg transition"
+              disabled={loading}
             >
-              Verify OTP
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
+            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
+              
+            
           </form>
         )}
 
@@ -179,8 +227,11 @@ const ForgotPassword = () => {
             <button
               type="submit"
               className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
+              disabled={loading}
             >
-              Reset Password
+              {loading ? "Resetting..." : "Reset Password"}
+              
+            {err && <p className="text-red-500 text-sm mt-2">{err}</p>}
             </button>
           </form>
         )}
