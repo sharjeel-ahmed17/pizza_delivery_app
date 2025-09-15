@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiUserPlus } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { auth } from "../../firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { ClipLoader } from "react-spinners";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,20 +32,60 @@ const Login = () => {
       console.log("Login Success:", res.data);
 
       alert(res.data.data?.message || "Logged in successfully!");
+      setErr("");
+      setLoading(false);
       navigate("/"); // ✅ redirect after login
     } catch (error) {
-      console.error("Login Error:", error.response?.data || error.message);
-      alert(error.response?.data?.data?.message || "Login failed");
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign In clicked");
-    // TODO: integrate Google OAuth
-  };
 
+
+    const handleGoogleSignIn = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    try {
+    
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider); // ✅ await here
+      const user = result.user;
+
+      // console.log("Google user:", user.displayName, user.email );
+
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
+        
+        email: user.email,
+        
+        
+      }, { withCredentials: true })
+      // console.log("Server response:", data);
+      setErr("")
+      setLoading(false)
+    } catch (error) {
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
@@ -103,9 +148,12 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? <ClipLoader color="white" size={20} /> : <>
+                            <FiUserPlus size={18} />
+                            Sign In
+                          </>}
           </button>
         </form>
 
@@ -121,9 +169,15 @@ const Login = () => {
           type="button"
           onClick={handleGoogleSignIn}
           className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-100 transition"
+          disabled={loading}
         >
-          <FcGoogle size={20} />
-          Sign in with Google
+          {
+              loading ? <ClipLoader color="white" size={20} /> : <>
+                <FcGoogle size={18} />
+                Sign in with Google
+              </>
+          }
+         
         </button>
 
         {/* Footer */}

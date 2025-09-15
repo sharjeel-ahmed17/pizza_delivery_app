@@ -6,7 +6,7 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
-import {ClipLoader} from "react-spinners"
+import { ClipLoader } from "react-spinners"
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -58,49 +58,55 @@ const Signup = () => {
       setErr("")
       setLoading(false)
     } catch (error) {
-     const backend = error.response?.data;
+      const backend = error.response?.data;
 
-    if (backend?.errors) {
-      // show backend validation error
-      setErr(backend.errors.message || backend.errors.general);
-    } else {
-      // fallback
-      setErr(error.message);
-    }
-  setLoading(false);
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false);
     }
   };
 
   const handleGoogleSignup = async (e) => {
     e.preventDefault();
     setLoading(true)
-  try {
-    if (!formData.mobile){
-      return setErr("Please enter mobile number")
+    try {
+      if (!formData.mobile) {
+        return setErr("Please enter mobile number")
+      }
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider); // ✅ await here
+      const user = result.user;
+
+      // console.log("Google user:", user.displayName, user.email );
+
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-auth`, {
+        fullname: user.displayName,
+        email: user.email,
+        role: formData.role,
+        mobile: formData.mobile,
+      }, { withCredentials: true })
+      // console.log("Server response:", data);
+      setErr("")
+      setLoading(false)
+    } catch (error) {
+      const backend = error.response?.data;
+
+      if (backend?.errors) {
+        // show backend validation error
+        setErr(backend.errors.message || backend.errors.general);
+      } else {
+        // fallback
+        setErr(error.message);
+      }
+      setLoading(false);
     }
-    const provider = new GoogleAuthProvider();
-
-    const result = await signInWithPopup(auth, provider); // ✅ await here
-    const user = result.user;
-
-    // console.log("Google user:", user.displayName, user.email );
-
-    const {data} = await axios.post(`${serverUrl}/api/auth/google-auth` , {
-      fullname: user.displayName,
-      email: user.email,
-      role: formData.role,
-      mobile: formData.mobile,
-    } , {withCredentials : true}) 
-    // console.log("Server response:", data);
-    setErr("")
-    setLoading(false)
-  } catch (error) {
-    console.log(error);
-    
-    setErr("Error loading:", error.response?.data?.message);
-    setLoading(false)
-  }
-};
+  };
 
 
   return (
@@ -189,13 +195,12 @@ const Signup = () => {
                 <button
                   type="button"
                   key={role}
-                  
+
                   onClick={() => handleRoleChange(role)}
-                  className={`px-4 py-2 rounded-lg border border-gray-300 transition ${
-                    formData.role === role
+                  className={`px-4 py-2 rounded-lg border border-gray-300 transition ${formData.role === role
                       ? "bg-blue-500 text-white hover:bg-blue-600"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                    }`}
                 >
                   {role === "deliveryBoy"
                     ? "Delivery Boy"
@@ -212,15 +217,15 @@ const Signup = () => {
             disabled={loading}
           >
             {
-loading ? <ClipLoader color="white" size={20} /> : <>
-<FiUserPlus size={18} />
-            Sign Up
-</>
+              loading ? <ClipLoader color="white" size={20} /> : <>
+                <FiUserPlus size={18} />
+                Sign Up
+              </>
             }
-            
+
           </button>
-           {err && <p className="text-red-500 text-sm mt-2 text-center">*{err}</p>}
-          
+          {err && <p className="text-red-500 text-sm mt-2 text-center">*{err}</p>}
+
         </form>
 
         {/* Divider */}
@@ -235,9 +240,14 @@ loading ? <ClipLoader color="white" size={20} /> : <>
           type="button"
           onClick={handleGoogleSignup}
           className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-100 transition"
+          disabled={loading}
         >
-          <FcGoogle size={20} />
-          Sign Up with Google
+          {
+              loading ? <ClipLoader color="white" size={20} /> : <>
+                <FcGoogle size={18} />
+                Sign Up
+              </>
+            }
         </button>
 
         {/* Footer */}
