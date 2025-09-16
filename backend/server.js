@@ -6,6 +6,7 @@ import morgan from "morgan"
 import { connectDB } from "./src/config/db.js"
 import cookieParser from "cookie-parser"
 import authRoute from "./src/routes/auth.route.js"
+import userRoute from "./src/routes/user.route.js"
 const app = express()
 
 const port =  process.env.PORT || 4000
@@ -22,6 +23,8 @@ app.use(cors({
 
 // routes
 app.use("/api/auth" , authRoute)
+app.use("/api/auth" , userRoute)
+// test route
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
