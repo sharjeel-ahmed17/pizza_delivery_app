@@ -38,7 +38,6 @@ const userSchema = new mongoose.Schema(
     },
     isOtpExpired : {
       type : Date,
-      default : false
     },
     provider: {
   type: String,

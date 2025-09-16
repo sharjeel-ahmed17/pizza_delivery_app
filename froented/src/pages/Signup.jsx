@@ -7,6 +7,8 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners"
+import { useDispatch } from "react-redux";
+import useGetCurrentUser from "../hooks/useGetCurrentUser";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +22,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
 
   const handleChange = (e) => {
@@ -55,6 +58,7 @@ const Signup = () => {
         mobile: "",
         role: "user",
       });
+      dispatch(useGetCurrentUser(result.data))
       setErr("")
       setLoading(false)
     } catch (error) {
@@ -92,6 +96,7 @@ const Signup = () => {
         mobile: formData.mobile,
       }, { withCredentials: true })
       // console.log("Server response:", data);
+      dispatch(useGetCurrentUser(data))
       setErr("")
       setLoading(false)
     } catch (error) {

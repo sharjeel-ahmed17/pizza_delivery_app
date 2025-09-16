@@ -23,7 +23,7 @@ app.use(cors({
 
 // routes
 app.use("/api/auth" , authRoute)
-app.use("/api/auth" , userRoute)
+app.use("/api/user" , userRoute)
 // test route
 app.get('/', (req, res) => {
   res.send('Hello World!')

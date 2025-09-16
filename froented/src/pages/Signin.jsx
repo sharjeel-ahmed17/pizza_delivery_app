@@ -7,12 +7,15 @@ import { serverUrl } from "../App";
 import { auth } from "../../firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { ClipLoader } from "react-spinners";
+import useGetCurrentUser from "../hooks/useGetCurrentUser";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const dispatch = useDispatch();
   
   const navigate = useNavigate();
 
@@ -32,6 +35,7 @@ const Login = () => {
       console.log("Login Success:", res.data);
 
       alert(res.data.data?.message || "Logged in successfully!");
+      dispatch(useGetCurrentUser(res.data))
       setErr("");
       setLoading(false);
       navigate("/"); // ✅ redirect after login
@@ -71,6 +75,7 @@ const Login = () => {
         
       }, { withCredentials: true })
       // console.log("Server response:", data);
+      dispatch(useGetCurrentUser(data))
       setErr("")
       setLoading(false)
     } catch (error) {
